@@ -1,0 +1,46 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      args:
+        - https_proxy
+        - http_proxy
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf:/etc/nginx
+      - ./www:/www
+    depends_on:
+      - php
+
+  php:
+    container_name: php
+    build:
+      context: ./php-fpm
+      args:
+        - https_proxy
+        - http_proxy
+    volumes:
+      - ./php-fpm/conf:/etc/php85
+      - ./www:/www
+    depends_on:
+      - db-mysql
+      - db-pgsql
+      - db-redis
+
+  db-mysql:
+    image: mariadb
+    container_name: db-mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+
+  db-pgsql:
+    image: postgres
+    container_name: db-pgsql
+    environment:
+      POSTGRES_PASSWORD: secret
+
+  db-redis:
+    image: redis
+    container_name: db-redis
