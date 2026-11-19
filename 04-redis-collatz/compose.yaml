@@ -1,0 +1,18 @@
+services:
+  app:
+    image: node
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    command: node index.js
+    environment:
+      - N=${N:-100000}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
